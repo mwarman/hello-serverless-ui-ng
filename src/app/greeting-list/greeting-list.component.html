@@ -1,0 +1,9 @@
+<div>
+  <h2>Greetings</h2>
+  <ul>
+    <li *ngFor="let greeting of greetings">
+      <a routerLink="/greetings/{{greeting.id}}">{{greeting.value}}</a> 
+      by {{greeting.author}}
+    </li>
+  </ul>
+</div>

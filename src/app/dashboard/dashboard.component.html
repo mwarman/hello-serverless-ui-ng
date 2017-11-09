@@ -1,0 +1,17 @@
+<h2>Dashboard</h2>
+<div *ngIf="greetings">
+  <h3>Status</h3>
+  <p>There are {{greetings.length}} greetings at your disposal.</p>
+
+  <h3>Recent</h3>
+  <ul *ngIf="recent">
+    <li *ngFor="let greeting of recent">
+      <a routerLink="/greetings/{{greeting.id}}">{{greeting.value}}</a>
+    </li>
+  </ul>
+  <p *ngIf="!recent">You have not viewed any greetings recently.</p>
+</div>
+
+<div *ngIf="!greetings">
+  No Greetings :(
+</div>
