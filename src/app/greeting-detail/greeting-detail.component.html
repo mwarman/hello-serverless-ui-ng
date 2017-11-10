@@ -1,7 +1,19 @@
 <div *ngIf="greeting">
 
   <h2>{{ greeting.value | uppercase }} Details</h2>
+
   <div><span>id: </span>{{greeting.id}}</div>
+  <div><span>value: </span>{{greeting.value}}</div>
+  <div><span>author: </span>{{greeting.author}}</div>
+
+  <button (click)="goBack()">go back</button>
+
+</div>
+
+<div *ngIf="greeting">
+
+  <h2>Update {{ greeting.value | uppercase }}</h2>
+
   <div>
     <label>value:
       <input [(ngModel)]="greeting.value" placeholder="Hello World!"/>
@@ -12,6 +24,7 @@
       <input [(ngModel)]="greeting.author" placeholder="John"/>
     </label>
   </div>
-  <button (click)="goBack()">go back</button>
   
+  <button (click)="save()">save</button>
+
 </div>

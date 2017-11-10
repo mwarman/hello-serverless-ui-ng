@@ -30,6 +30,11 @@ export class GreetingDetailComponent implements OnInit {
       .subscribe(greeting => this.greeting = greeting);
   }
 
+  save(): void {
+    this.greetingService.updateGreeting(this.greeting)
+      .subscribe(() => this.goBack());
+  }
+
   goBack(): void {
     this.location.back();
   }

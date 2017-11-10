@@ -8,6 +8,10 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { Greeting } from './greeting';
 import { GREETINGS } from './mock-greetings';
 
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-type': 'application/json' })
+};
+
 @Injectable()
 export class GreetingService {
 
@@ -35,6 +39,14 @@ export class GreetingService {
 
   getRecent(): Greeting[] {
     return this.recentGreetings;
+  }
+
+  updateGreeting(greeting: Greeting): Observable<Greeting> {
+    const url = `${this.greetingsUrl}/${greeting.id}`;
+    return this.http.put<Greeting>(url, greeting, httpOptions).pipe(
+      tap(greeting => console.log(`updated greeting id=${greeting.id}`)),
+      catchError(this.handleError<Greeting>('updateGreeting'))
+    );
   }
 
   private addRecent(greeting): void {
