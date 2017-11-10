@@ -20,7 +20,10 @@ export class GreetingListComponent implements OnInit {
 
   getGreetings(): void {
     this.greetingService.getGreetings()
-      .subscribe(greetings => this.greetings = greetings);
+      .subscribe(greetings => {
+        this.greetings = greetings;
+        console.log(`GreetingListComponent greetings: ${JSON.stringify(this.greetings, null, 2)}`);
+      });
   }
 
 }
