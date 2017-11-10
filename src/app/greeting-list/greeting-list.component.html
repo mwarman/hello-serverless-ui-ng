@@ -1,9 +1,18 @@
 <div>
   <h2>Greetings</h2>
+  <div>
+    <label>text:
+      <input #greetingText />
+    </label>
+    <label>author:
+      <input #greetingAuthor />
+    </label>
+    <!-- (click) passes input value to add() and then clears the input -->
+    <button (click)="add(greetingText.value, greetingAuthor.value); greetingText.value=''; greetingAuthor.value=''">add</button>
+  </div>
   <ul>
     <li *ngFor="let greeting of greetings">
-      <a routerLink="/greetings/{{greeting.id}}">{{greeting.value}}</a> 
-      by {{greeting.author}}
+      <a routerLink="/greetings/{{greeting.id}}">{{greeting.value}}</a> by {{greeting.author}}
     </li>
   </ul>
 </div>

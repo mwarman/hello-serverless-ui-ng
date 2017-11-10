@@ -22,7 +22,19 @@ export class GreetingListComponent implements OnInit {
     this.greetingService.getGreetings()
       .subscribe(greetings => {
         this.greetings = greetings;
-        console.log(`GreetingListComponent greetings: ${JSON.stringify(this.greetings, null, 2)}`);
+        // console.log(`GreetingListComponent greetings: ${JSON.stringify(this.greetings, null, 2)}`);
+      });
+  }
+
+  add(value: string, author: string): void {
+    value = value.trim();
+    author = author.trim();
+    if (!value || !author) {
+      return;
+    }
+    this.greetingService.addGreeting({value,author} as Greeting)
+      .subscribe(greeting => {
+        this.greetings.push(greeting);
       });
   }
 

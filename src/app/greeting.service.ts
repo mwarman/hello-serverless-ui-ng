@@ -24,7 +24,7 @@ export class GreetingService {
     return this.http.get<any>(this.greetingsUrl)
       .pipe(
         map(data => data.greetings as Greeting[]),
-        tap(greetings => console.log(greetings)),
+        tap(greetings => console.log(`fetched all (${greetings.length}) greetings`)),
         catchError(this.handleError('getGreetings', []))
       );
   }
@@ -32,7 +32,10 @@ export class GreetingService {
   getGreeting(id: string): Observable<Greeting> {
     const url = `${this.greetingsUrl}/${id}`;
     return this.http.get<Greeting>(url).pipe(
-      tap(greeting => this.addRecent(greeting)),
+      tap(greeting => {
+        this.addRecent(greeting);
+        console.log(`fetched greeting id:${greeting.id}`);
+      }),
       catchError(this.handleError<Greeting>(`getGreeting id=${id}`))
     );
   }
@@ -46,6 +49,13 @@ export class GreetingService {
     return this.http.put<Greeting>(url, greeting, httpOptions).pipe(
       tap(greeting => console.log(`updated greeting id=${greeting.id}`)),
       catchError(this.handleError<Greeting>('updateGreeting'))
+    );
+  }
+
+  addGreeting(greeting: Greeting): Observable<Greeting> {
+    return this.http.post<Greeting>(this.greetingsUrl, greeting, httpOptions).pipe(
+      tap(greeting => console.log(`added new greeting with id:${greeting.id}`)),
+      catchError(this.handleError<Greeting>('addGreeting'))
     );
   }
 
