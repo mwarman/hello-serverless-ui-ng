@@ -47,7 +47,7 @@ export class GreetingService {
   updateGreeting(greeting: Greeting): Observable<Greeting> {
     const url = `${this.greetingsUrl}/${greeting.id}`;
     return this.http.put<Greeting>(url, greeting, httpOptions).pipe(
-      tap(greeting => console.log(`updated greeting id=${greeting.id}`)),
+      tap(greeting => console.log(`updated greeting id:${greeting.id}`)),
       catchError(this.handleError<Greeting>('updateGreeting'))
     );
   }
@@ -56,6 +56,19 @@ export class GreetingService {
     return this.http.post<Greeting>(this.greetingsUrl, greeting, httpOptions).pipe(
       tap(greeting => console.log(`added new greeting with id:${greeting.id}`)),
       catchError(this.handleError<Greeting>('addGreeting'))
+    );
+  }
+
+  deleteGreeting(greeting: Greeting | number): Observable<Greeting> {
+    const id = typeof greeting === 'number' ? greeting : greeting.id;
+    const url = `${this.greetingsUrl}/${id}`;
+
+    return this.http.delete<Greeting>(url, httpOptions).pipe(
+      tap(greeting => {
+        console.log(`deleted greeting id:${id}`);
+        this.removeRecent(greeting.id);
+      }),
+      catchError(this.handleError<Greeting>('deleteGreeting'))
     );
   }
 

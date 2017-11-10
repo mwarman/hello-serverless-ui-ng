@@ -38,4 +38,11 @@ export class GreetingListComponent implements OnInit {
       });
   }
 
+  delete(greeting: Greeting): void {
+    this.greetingService.deleteGreeting(greeting)
+      .subscribe(deletedGreeting => {
+        this.greetings = this.greetings.filter(g => g.id !== greeting.id);
+      });
+  }
+
 }

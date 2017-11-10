@@ -13,6 +13,7 @@
   <ul>
     <li *ngFor="let greeting of greetings">
       <a routerLink="/greetings/{{greeting.id}}">{{greeting.value}}</a> by {{greeting.author}}
+      <button title="delete" (click)="delete(greeting)">x</button>
     </li>
   </ul>
 </div>
