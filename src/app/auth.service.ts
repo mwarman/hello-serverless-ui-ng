@@ -8,6 +8,8 @@ AWS.config.region = 'us-east-1';
 @Injectable()
 export class AuthService {
 
+  redirectUrl: string = '/';
+
   // TODO Obtain from Config
   private userPoolId = 'us-east-1_fQSDwKQMK';
   private clientId = '2et2lh23olteluq6n9dr8n1qrd';

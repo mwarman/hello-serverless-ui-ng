@@ -14,6 +14,7 @@ import { SigninComponent } from './signin/signin.component';
 import { AuthService } from './auth.service';
 import { AwsSignInterceptor } from './aws-sign.interceptor';
 import { ApiGatewayService } from './api-gateway.service';
+import { AuthGuardService } from './auth-guard.service';
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import { ApiGatewayService } from './api-gateway.service';
     },
     GreetingService,
     AuthService,
-    ApiGatewayService
+    ApiGatewayService,
+    AuthGuardService
   ],
   bootstrap: [AppComponent]
 })
