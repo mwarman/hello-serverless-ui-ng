@@ -1,0 +1,12 @@
+<div class="">
+  <h2>Sign In</h2>
+  <div>
+    <label>username:
+        <input #un />
+      </label>
+    <label>password:
+        <input #pw />
+      </label>
+    <button (click)="signin(un.value, pw.value); un.value=''; pw.value=''">signin</button>
+  </div>
+</div>
