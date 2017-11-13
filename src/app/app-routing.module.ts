@@ -7,11 +7,12 @@ import { GreetingDetailComponent } from './greeting-detail/greeting-detail.compo
 import { SigninComponent } from './signin/signin.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'signin', component: SigninComponent },
   { path: 'greetings', component: GreetingListComponent },
-  { path: 'greetings/:id', component: GreetingDetailComponent }
+  { path: 'greetings/:id', component: GreetingDetailComponent },
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '**', redirectTo: '/dashboard' }
 ];
 
 @NgModule({
