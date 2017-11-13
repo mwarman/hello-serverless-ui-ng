@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
 
@@ -10,6 +10,10 @@ import { GreetingListComponent } from './greeting-list/greeting-list.component';
 import { GreetingDetailComponent } from './greeting-detail/greeting-detail.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { SigninComponent } from './signin/signin.component';
+import { AuthService } from './auth.service';
+import { AwsSignInterceptor } from './aws-sign.interceptor';
+import { ApiGatewayService } from './api-gateway.service';
 
 
 @NgModule({
@@ -17,7 +21,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     AppComponent,
     GreetingListComponent,
     GreetingDetailComponent,
-    DashboardComponent
+    DashboardComponent,
+    SigninComponent
   ],
   imports: [
     BrowserModule,
@@ -25,7 +30,16 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     HttpClientModule,
     AppRoutingModule
   ],
-  providers: [ GreetingService ],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AwsSignInterceptor,
+      multi: true,
+    },
+    GreetingService,
+    AuthService,
+    ApiGatewayService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
