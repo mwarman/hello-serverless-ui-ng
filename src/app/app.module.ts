@@ -17,6 +17,8 @@ import { ApiGatewayService } from './api-gateway.service';
 import { AuthGuardService } from './auth-guard.service';
 import { SignupComponent } from './signup/signup.component';
 import { ConfirmRegistrationComponent } from './confirm-registration/confirm-registration.component';
+import { SignoutComponent } from './signout/signout.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 
 @NgModule({
@@ -27,7 +29,9 @@ import { ConfirmRegistrationComponent } from './confirm-registration/confirm-reg
     DashboardComponent,
     SigninComponent,
     SignupComponent,
-    ConfirmRegistrationComponent
+    ConfirmRegistrationComponent,
+    SignoutComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
