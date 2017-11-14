@@ -155,12 +155,53 @@ export class AuthService {
     });
   }
 
+  getSession(): Observable<any> {
+    this.cognitoUser = this.userPool.getCurrentUser();
+    if (this.cognitoUser != null) {
+      let getSessionObservable = Observable.bindCallback(this.getSessionWithCallback);
+      return getSessionObservable(this.cognitoUser).pipe(
+        tap((result: any) => {
+          this.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: 'us-east-1:dd021fcb-aa73-4ffb-9194-643f7c0c406e',
+            Logins: {
+              ['cognito-idp.us-east-1.amazonaws.com/us-east-1_fQSDwKQMK']: result.getIdToken().getJwtToken()
+            }
+          });
+          AWS.config.credentials = this.credentials;
+        }),
+        flatMap((result) => {
+          console.log(`flatMap`);
+          return this.refreshCredentials();
+        }),
+        catchError(this.handleError('signIn', {}))
+      );
+    } else {
+      return Observable.of({
+        success: false
+      });
+    }
+  }
+
+  private getSessionWithCallback(cognitoUser: CognitoUser, callback: Function): void {
+    console.log(`> AuthService.getSessionWithCallback`);
+    cognitoUser.getSession((err, session) => {
+      if (err) {
+        throw err;
+      } else {
+        callback(session);
+      }
+    });
+  }
+
   refreshCredentials(): Observable<any> {
     console.log(` AuthService.refreshCredentials`);
     let refreshCredentialsObservable = Observable.bindCallback(this.refreshCredentialsWithCallback);
     return refreshCredentialsObservable(this.credentials).pipe(
       tap((result) => this.authenticated = true),
-      catchError(this.handleError('refreshCredentials', {}))
+      map((result) => {
+        return {success: true};
+      }),
+      catchError(this.handleError('refreshCredentials', {success: false}))
     );
   }
 
