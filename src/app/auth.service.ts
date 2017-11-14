@@ -124,6 +124,7 @@ export class AuthService {
     let signInObservable = Observable.bindCallback(this.signInWithCallback);
     return signInObservable(this.cognitoUser, this.authenticationDetails).pipe(
       tap((result: any) => {
+        console.log(`> tap`);
         this.credentials = new AWS.CognitoIdentityCredentials({
           IdentityPoolId: 'us-east-1:dd021fcb-aa73-4ffb-9194-643f7c0c406e',
           Logins: {
@@ -131,8 +132,12 @@ export class AuthService {
           }
         });
         AWS.config.credentials = this.credentials;
+        console.log(`< tap`);
       }),
-      flatMap((result) => this.refreshCredentials()),
+      flatMap((result) => {
+        console.log(`flatMap`);
+        return this.refreshCredentials();
+      }),
       catchError(this.handleError('signIn', {}))
     );
   }
@@ -166,7 +171,7 @@ export class AuthService {
         throw error;
       } else {
         AWS.config.credentials = credentials;
-        console.log('Successfully obtained temporary credentials.');
+        console.log('Successfully refreshed credentials.');
         console.log(`    Access Key ID: ${AWS.config.credentials.accessKeyId}`);
         console.log(`Secret Access Key: ${AWS.config.credentials.secretAccessKey}`);
         console.log(`    Session Token: ${AWS.config.credentials.sessionToken}`);
