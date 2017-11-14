@@ -15,6 +15,8 @@ import { AuthService } from './auth.service';
 import { AwsSignInterceptor } from './aws-sign.interceptor';
 import { ApiGatewayService } from './api-gateway.service';
 import { AuthGuardService } from './auth-guard.service';
+import { SignupComponent } from './signup/signup.component';
+import { ConfirmRegistrationComponent } from './confirm-registration/confirm-registration.component';
 
 
 @NgModule({
@@ -23,7 +25,9 @@ import { AuthGuardService } from './auth-guard.service';
     GreetingListComponent,
     GreetingDetailComponent,
     DashboardComponent,
-    SigninComponent
+    SigninComponent,
+    SignupComponent,
+    ConfirmRegistrationComponent
   ],
   imports: [
     BrowserModule,

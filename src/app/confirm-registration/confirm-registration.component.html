@@ -1,0 +1,21 @@
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <h2>Complete Registration</h2>
+    <p>
+      A confirmation code has been emailed to you and should arrive within a few minutes.
+      Enter the code into the form to complete the registration.
+    </p>
+    <form>
+      <div class="form-group">
+        <label for="un">Code</label>
+        <input #vcode type="text" class="form-control" placeholder="123456" />
+      </div>
+      <button
+        class="btn btn-primary"
+        (click)="confirm(vcode.value); vcode.value=''">
+        Verify
+        <i class="fa fa-chevron-right"></i>
+      </button>
+    </form>
+  </div>
+</div>
