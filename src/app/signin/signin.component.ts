@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { AuthService } from '../auth.service';
 
@@ -9,13 +10,19 @@ import { AuthService } from '../auth.service';
 })
 export class SigninComponent implements OnInit {
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
   }
 
   signin(username: string, password: string): void {
-    this.authService.signIn(username, password);
+    this.authService.signIn(username, password).subscribe((result) => {
+      console.log(`- SigninComponent.signin result: ${JSON.stringify(result, null, 2)}`);
+      this.router.navigate(['/']);
+    });;
   }
 
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { Observable } from 'rxjs/Rx';
 import { of } from 'rxjs/observable/of';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, flatMap, tap } from 'rxjs/operators';
 
 import { AuthenticationDetails, CognitoUserPool, CognitoUser } from 'amazon-cognito-identity-js';
 import * as AWS from 'aws-sdk';
@@ -76,7 +76,7 @@ export class AuthService {
     cognitoUser.confirmRegistration(code, true, (err, result) => {
       if (err) {
         throw err;
-      }else {
+      } else {
         callback(result);
       }
     });
@@ -110,7 +110,8 @@ export class AuthService {
     }
   }
 
-  signIn(username: string, password: string): void {
+  signIn(username: string, password: string): Observable<any> {
+    console.log(`> AuthService.signIn`);
     this.authenticationDetails = new AuthenticationDetails({
       Username: username,
       Password: password
@@ -120,9 +121,9 @@ export class AuthService {
       Pool: this.userPool
     });
 
-    this.cognitoUser.authenticateUser(this.authenticationDetails, {
-      onSuccess: (result) => {
-        console.log(`Cognito authentication successful. result: ${JSON.stringify(result, null, 2)}`);
+    let signInObservable = Observable.bindCallback(this.signInWithCallback);
+    return signInObservable(this.cognitoUser, this.authenticationDetails).pipe(
+      tap((result: any) => {
         this.credentials = new AWS.CognitoIdentityCredentials({
           IdentityPoolId: 'us-east-1:dd021fcb-aa73-4ffb-9194-643f7c0c406e',
           Logins: {
@@ -130,28 +131,46 @@ export class AuthService {
           }
         });
         AWS.config.credentials = this.credentials;
+      }),
+      flatMap((result) => this.refreshCredentials()),
+      catchError(this.handleError('signIn', {}))
+    );
+  }
 
-        this.refreshCredentials();
+  private signInWithCallback(cognitoUser: CognitoUser, authenticationDetails: AuthenticationDetails, callback: Function): void {
+    console.log(`> AuthService.signInWithCallback`);
+    cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess: (result) => {
+        console.log(`Cognito authentication successful. result: ${JSON.stringify(result, null, 2)}`);
+        callback(result);
       },
       onFailure: (err) => {
-        console.error(`Cognito authentication failed.`);
-        console.error(err, err.stack);
+        throw err;
       }
     });
   }
 
-  private refreshCredentials(): void {
-    this.credentials.refresh((error) => {
+  refreshCredentials(): Observable<any> {
+    console.log(` AuthService.refreshCredentials`);
+    let refreshCredentialsObservable = Observable.bindCallback(this.refreshCredentialsWithCallback);
+    return refreshCredentialsObservable(this.credentials).pipe(
+      tap((result) => this.authenticated = true),
+      catchError(this.handleError('refreshCredentials', {}))
+    );
+  }
+
+  private refreshCredentialsWithCallback(credentials: AWS.CognitoIdentityCredentials, callback: Function): void {
+    console.log(`> AuthService.refreshCredentialsWithCallback`);
+    credentials.refresh((error) => {
       if (error) {
-        console.error('Cognito Identity credentials refresh failed.');
-        console.error(error);
+        throw error;
       } else {
-        AWS.config.credentials = this.credentials;
-        this.authenticated = true;
+        AWS.config.credentials = credentials;
         console.log('Successfully obtained temporary credentials.');
         console.log(`    Access Key ID: ${AWS.config.credentials.accessKeyId}`);
         console.log(`Secret Access Key: ${AWS.config.credentials.secretAccessKey}`);
         console.log(`    Session Token: ${AWS.config.credentials.sessionToken}`);
+        callback({});
       }
     });
   }
