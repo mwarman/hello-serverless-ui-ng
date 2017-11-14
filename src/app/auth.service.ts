@@ -82,6 +82,34 @@ export class AuthService {
     });
   }
 
+  signout(): Observable<any> {
+    console.log(`signout`);
+    let signoutObservable = Observable.bindCallback(this.signoutWithCallback);
+    return signoutObservable(this.cognitoUser).pipe(
+      tap((result) => {
+        console.log(`signout success`);
+        this.authenticated = false;
+        this.authenticationDetails = undefined;
+        this.cognitoUser = undefined;
+        this.credentials = undefined;
+        AWS.config.credentials = undefined;
+      }),
+      catchError(this.handleError('signout', {}))
+    );
+  }
+
+  private signoutWithCallback(cognitoUser: CognitoUser, callback: Function): void {
+    console.log(`signoutWithCallback`);
+    try {
+      if (cognitoUser) {
+        cognitoUser.signOut();
+      }
+      callback({});
+    } catch (err) {
+      throw err;
+    }
+  }
+
   signIn(username: string, password: string): void {
     this.authenticationDetails = new AuthenticationDetails({
       Username: username,
