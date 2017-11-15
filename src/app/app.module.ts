@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { CoreModule } from './core/core.module';
+import { SharedModule } from './shared/shared.module'
 import { AuthModule } from './auth/auth.module';
 import { GreetingModule } from './greeting/greeting.module';
 
@@ -21,6 +22,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     FormsModule,
     HttpClientModule,
     CoreModule,
+    SharedModule,
     AuthModule,
     GreetingModule,
     AppRoutingModule
