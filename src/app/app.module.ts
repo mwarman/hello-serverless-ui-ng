@@ -1,8 +1,9 @@
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgModule } from '@angular/core';
 
+import { CoreModule } from './core/core.module';
 
 import { AppComponent } from './app.component';
 import { GreetingService } from './greeting.service';
@@ -18,7 +19,6 @@ import { AuthGuardService } from './auth-guard.service';
 import { SignupComponent } from './signup/signup.component';
 import { ConfirmRegistrationComponent } from './confirm-registration/confirm-registration.component';
 import { SignoutComponent } from './signout/signout.component';
-import { NavbarComponent } from './navbar/navbar.component';
 
 
 @NgModule({
@@ -30,13 +30,13 @@ import { NavbarComponent } from './navbar/navbar.component';
     SigninComponent,
     SignupComponent,
     ConfirmRegistrationComponent,
-    SignoutComponent,
-    NavbarComponent
+    SignoutComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpClientModule,
+    CoreModule,
     AppRoutingModule
   ],
   providers: [
