@@ -4,8 +4,8 @@ import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpHeaders } fro
 import { Observable } from 'rxjs/Rx';
 import * as AWS from 'aws-sdk';
 
-import { AuthService } from './auth.service';
-import { ApiGatewayService } from './api-gateway.service';
+import { AuthService } from '../../auth.service';
+import { ApiGatewayService } from '../aws/api-gateway.service';
 
 @Injectable()
 export class AwsSignInterceptor implements HttpInterceptor {

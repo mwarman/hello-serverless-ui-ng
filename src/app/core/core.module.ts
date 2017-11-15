@@ -1,15 +1,19 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { NavbarComponent } from './navbar/navbar.component';
 import { requestOptionsProvider } from './http/default-request-options.service';
 import { AuthGuardService } from './router/auth-guard.service';
+import { ApiGatewayService } from './aws/api-gateway.service';
+import { AwsSignInterceptor } from './http/aws-sign.interceptor';
 
 @NgModule({
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    HttpClientModule
   ],
   declarations: [
     NavbarComponent
@@ -17,9 +21,14 @@ import { AuthGuardService } from './router/auth-guard.service';
   exports: [
     NavbarComponent
   ],
-  providers: [
+  providers: [{
+      provide: HTTP_INTERCEPTORS,
+      useClass: AwsSignInterceptor,
+      multi: true,
+    },
     requestOptionsProvider,
-    AuthGuardService
+    AuthGuardService,
+    ApiGatewayService
   ]
 })
 export class CoreModule { }
