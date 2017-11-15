@@ -15,7 +15,6 @@ import { SigninComponent } from './signin/signin.component';
 import { AuthService } from './auth.service';
 import { AwsSignInterceptor } from './aws-sign.interceptor';
 import { ApiGatewayService } from './api-gateway.service';
-import { AuthGuardService } from './auth-guard.service';
 import { SignupComponent } from './signup/signup.component';
 import { ConfirmRegistrationComponent } from './confirm-registration/confirm-registration.component';
 import { SignoutComponent } from './signout/signout.component';
@@ -47,8 +46,7 @@ import { SignoutComponent } from './signout/signout.component';
     },
     GreetingService,
     AuthService,
-    ApiGatewayService,
-    AuthGuardService
+    ApiGatewayService
   ],
   bootstrap: [AppComponent]
 })

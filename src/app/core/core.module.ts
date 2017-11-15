@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 
 import { NavbarComponent } from './navbar/navbar.component';
 import { requestOptionsProvider } from './http/default-request-options.service';
+import { AuthGuardService } from './router/auth-guard.service';
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import { requestOptionsProvider } from './http/default-request-options.service';
     NavbarComponent
   ],
   providers: [
-    requestOptionsProvider
+    requestOptionsProvider,
+    AuthGuardService
   ]
 })
 export class CoreModule { }
