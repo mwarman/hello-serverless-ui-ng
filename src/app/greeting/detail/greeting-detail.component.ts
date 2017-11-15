@@ -14,6 +14,9 @@ import { Greeting } from '../greeting';
 })
 export class GreetingDetailComponent implements OnInit {
 
+  busyLoading: boolean = false;
+  busyUpdating: boolean = false;
+
   mode: string = 'view';
   greeting: Greeting;
   editingGreeting: Greeting;
@@ -30,9 +33,13 @@ export class GreetingDetailComponent implements OnInit {
   }
 
   getGreeting(): void {
+    this.busyLoading = true;
     const id = this.route.snapshot.paramMap.get('id');
     this.greetingService.getGreeting(id)
-      .subscribe(greeting => this.greeting = greeting);
+      .subscribe(greeting => {
+        this.greeting = greeting;
+        this.busyLoading = false;
+      });
   }
 
   view(): void {
@@ -45,8 +52,12 @@ export class GreetingDetailComponent implements OnInit {
   }
 
   save(): void {
+    this.busyUpdating = true;
     this.greetingService.updateGreeting(this.editingGreeting)
-      .subscribe(() => this.goBack());
+      .subscribe(() => {
+        this.busyUpdating = false;
+        this.goBack();
+      });
   }
 
   goBack(): void {

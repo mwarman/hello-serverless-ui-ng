@@ -10,18 +10,23 @@ import { AuthService } from '../auth.service';
 })
 export class ConfirmRegistrationComponent implements OnInit {
 
+  busy: boolean = false;
+
   constructor(
     private authService: AuthService,
     private router: Router
   ) { }
 
   ngOnInit() {
+    this.busy = false;
   }
 
   confirm(code: string): void {
     console.log(`> SignupComponent.confirm code:${code}`);
+    this.busy = true;
     this.authService.confirmRegistration(code).subscribe((result) => {
       console.log(`- ConfirmRegistrationComponent.signup result: ${JSON.stringify(result, null, 2)}`);
+      this.busy = false;
       this.router.navigate(['/dashboard']);
     });
   }

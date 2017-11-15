@@ -6,6 +6,7 @@
       Enter the code into the form to complete the registration.
     </p>
     <form>
+      <app-spinner *ngIf="busy" [text]="'Verifying...'" [size]="'2x'"></app-spinner>
       <div class="form-group">
         <label for="un">Code</label>
         <input #vcode type="text" class="form-control" placeholder="123456" />

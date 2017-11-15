@@ -11,6 +11,9 @@ import { Greeting } from '../greeting';
 })
 export class GreetingListComponent implements OnInit {
 
+  busyLoading: boolean = false;
+  busyAdding: boolean = false;
+
   greetings: Greeting[];
 
   constructor(
@@ -23,9 +26,11 @@ export class GreetingListComponent implements OnInit {
   }
 
   getGreetings(): void {
+    this.busyLoading = true;
     this.greetingService.getGreetings()
       .subscribe(greetings => {
         this.greetings = greetings;
+        this.busyLoading = false;
         // console.log(`GreetingListComponent greetings: ${JSON.stringify(this.greetings, null, 2)}`);
       });
   }
@@ -40,16 +45,20 @@ export class GreetingListComponent implements OnInit {
     if (!value || !author) {
       return;
     }
+    this.busyAdding = true;
     this.greetingService.addGreeting({value,author} as Greeting)
       .subscribe(greeting => {
         this.greetings.push(greeting);
+        this.busyAdding = false;
       });
   }
 
   delete(greeting: Greeting): void {
+    this.busyLoading = true;
     this.greetingService.deleteGreeting(greeting)
       .subscribe(deletedGreeting => {
         this.greetings = this.greetings.filter(g => g.id !== greeting.id);
+        this.busyLoading = false;
       });
   }
 
