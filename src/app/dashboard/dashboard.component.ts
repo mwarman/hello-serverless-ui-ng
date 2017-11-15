@@ -11,6 +11,8 @@ import { Greeting } from '../greeting/greeting';
 })
 export class DashboardComponent implements OnInit {
 
+  busy: boolean = false;
+
   greetings: Greeting[];
   recent: Greeting[];
 
@@ -20,13 +22,18 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.busy = false;
     this.getGreetings();
   }
 
   getGreetings(): void {
+    this.busy = true;
     this.recent = this.greetingService.getRecent();
     this.greetingService.getGreetings()
-      .subscribe(greetings => this.greetings = greetings);
+      .subscribe(greetings => {
+        this.greetings = greetings;
+        this.busy = false;
+      });
   }
 
   view(id: string): void {
