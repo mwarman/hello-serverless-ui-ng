@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { GreetingService } from '../greeting.service';
-import { Greeting } from '../greeting';
+import { GreetingService } from '../greeting/greeting.service';
+import { Greeting } from '../greeting/greeting';
 
 @Component({
   selector: 'app-dashboard',

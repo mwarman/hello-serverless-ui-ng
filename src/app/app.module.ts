@@ -4,11 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { CoreModule } from './core/core.module';
+import { GreetingModule } from './greeting/greeting.module';
 
 import { AppComponent } from './app.component';
-import { GreetingService } from './greeting.service';
-import { GreetingListComponent } from './greeting-list/greeting-list.component';
-import { GreetingDetailComponent } from './greeting-detail/greeting-detail.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SigninComponent } from './signin/signin.component';
@@ -21,8 +19,6 @@ import { SignoutComponent } from './signout/signout.component';
 @NgModule({
   declarations: [
     AppComponent,
-    GreetingListComponent,
-    GreetingDetailComponent,
     DashboardComponent,
     SigninComponent,
     SignupComponent,
@@ -34,10 +30,10 @@ import { SignoutComponent } from './signout/signout.component';
     FormsModule,
     HttpClientModule,
     CoreModule,
+    GreetingModule,
     AppRoutingModule
   ],
   providers: [
-    GreetingService,
     AuthService
   ],
   bootstrap: [AppComponent]
