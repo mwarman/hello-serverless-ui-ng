@@ -1,17 +1,37 @@
-<h2>Dashboard</h2>
-<div *ngIf="greetings">
-  <h3>Status</h3>
-  <p>There are {{greetings.length}} greetings at your disposal.</p>
-
-  <h3>Recent</h3>
-  <ul *ngIf="recent">
-    <li *ngFor="let greeting of recent">
-      <a routerLink="/greetings/{{greeting.id}}">{{greeting.value}}</a>
-    </li>
-  </ul>
-  <p *ngIf="!recent">You have not viewed any greetings recently.</p>
+<div class="row">
+  <div class="col-md-12">
+    <h2>Dashboard</h2>
+  </div>
 </div>
 
-<div *ngIf="!greetings">
-  No Greetings :(
+<div class="row">
+  <div class="col-md-6">
+    <div *ngIf="greetings">
+      <h3>Status</h3>
+      <p>There are {{greetings.length}} greetings at your disposal.</p>
+    </div>
+
+    <div *ngIf="!greetings">
+      No Greetings :(
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div *ngIf="greetings">
+      <h3>Recently Viewed</h3>
+      <ul *ngIf="recent" class="list-unstyled">
+        <li *ngFor="let greeting of recent">
+          <blockquote>
+            <p (click)="view(greeting.id)">{{greeting.value}}</p>
+            <footer>{{greeting.author}}</footer>
+          </blockquote>
+        </li>
+      </ul>
+      <p *ngIf="!recent">You have not viewed any greetings recently.</p>
+    </div>
+
+    <div *ngIf="!greetings">
+      No Greetings :(
+    </div>
+  </div>
 </div>

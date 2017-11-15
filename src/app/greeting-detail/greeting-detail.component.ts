@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
+import * as _ from 'lodash';
+
 import { GreetingService } from '../greeting.service';
 import { Greeting } from '../greeting';
 
@@ -12,7 +14,9 @@ import { Greeting } from '../greeting';
 })
 export class GreetingDetailComponent implements OnInit {
 
+  mode: string = 'view';
   greeting: Greeting;
+  editingGreeting: Greeting;
 
   constructor(
     private route: ActivatedRoute,
@@ -21,6 +25,7 @@ export class GreetingDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.mode = 'view';
     this.getGreeting();
   }
 
@@ -30,8 +35,17 @@ export class GreetingDetailComponent implements OnInit {
       .subscribe(greeting => this.greeting = greeting);
   }
 
+  view(): void {
+    this.mode = 'view';
+  }
+
+  edit(): void {
+    this.editingGreeting = _.clone(this.greeting);
+    this.mode = 'edit';
+  }
+
   save(): void {
-    this.greetingService.updateGreeting(this.greeting)
+    this.greetingService.updateGreeting(this.editingGreeting)
       .subscribe(() => this.goBack());
   }
 

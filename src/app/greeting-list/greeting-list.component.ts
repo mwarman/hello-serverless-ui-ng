@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { GreetingService } from '../greeting.service';
 import { Greeting } from '../greeting';
@@ -12,7 +13,10 @@ export class GreetingListComponent implements OnInit {
 
   greetings: Greeting[];
 
-  constructor(private greetingService: GreetingService) { }
+  constructor(
+    private greetingService: GreetingService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
     this.getGreetings();
@@ -24,6 +28,10 @@ export class GreetingListComponent implements OnInit {
         this.greetings = greetings;
         // console.log(`GreetingListComponent greetings: ${JSON.stringify(this.greetings, null, 2)}`);
       });
+  }
+
+  view(id: string): void {
+    this.router.navigate(['/greetings', id]);
   }
 
   add(value: string, author: string): void {
