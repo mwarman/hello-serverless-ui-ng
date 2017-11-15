@@ -7,10 +7,6 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { Greeting } from './greeting';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-type': 'application/json' })
-};
-
 @Injectable()
 export class GreetingService {
 
@@ -45,14 +41,14 @@ export class GreetingService {
 
   updateGreeting(greeting: Greeting): Observable<Greeting> {
     const url = `${this.greetingsUrl}/${greeting.id}`;
-    return this.http.put<Greeting>(url, greeting, httpOptions).pipe(
+    return this.http.put<Greeting>(url, greeting).pipe(
       tap(greeting => console.log(`updated greeting id:${greeting.id}`)),
       catchError(this.handleError<Greeting>('updateGreeting'))
     );
   }
 
   addGreeting(greeting: Greeting): Observable<Greeting> {
-    return this.http.post<Greeting>(this.greetingsUrl, greeting, httpOptions).pipe(
+    return this.http.post<Greeting>(this.greetingsUrl, greeting).pipe(
       tap(greeting => console.log(`added new greeting with id:${greeting.id}`)),
       catchError(this.handleError<Greeting>('addGreeting'))
     );
@@ -62,7 +58,7 @@ export class GreetingService {
     const id = typeof greeting === 'number' ? greeting : greeting.id;
     const url = `${this.greetingsUrl}/${id}`;
 
-    return this.http.delete<Greeting>(url, httpOptions).pipe(
+    return this.http.delete<Greeting>(url).pipe(
       tap(greeting => {
         console.log(`deleted greeting id:${id}`);
         this.removeRecent(greeting.id);
