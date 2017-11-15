@@ -2,6 +2,7 @@
   <div class="col-md-6 col-md-offset-3">
     <h2>Register</h2>
     <form>
+      <app-spinner *ngIf="busy" [text]="'Registering...'" [size]="'2x'"></app-spinner>
       <div class="form-group">
         <label for="un">Email</label>
         <input #un type="email" class="form-control" placeholder="joe@example.com" />
