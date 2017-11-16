@@ -39,6 +39,10 @@ export class GreetingService {
     return this.recentGreetings;
   }
 
+  clearRecent(): void {
+    this.recentGreetings = [];
+  }
+
   updateGreeting(greeting: Greeting): Observable<Greeting> {
     const url = `${this.greetingsUrl}/${greeting.id}`;
     return this.http.put<Greeting>(url, greeting).pipe(
