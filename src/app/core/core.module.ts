@@ -8,6 +8,7 @@ import { requestOptionsProvider } from './http/default-request-options.service';
 import { AuthGuardService } from './router/auth-guard.service';
 import { ApiGatewayService } from './aws/api-gateway.service';
 import { AwsSignInterceptor } from './http/aws-sign.interceptor';
+import { ConfigService } from './config/config.service';
 
 @NgModule({
   imports: [
@@ -28,7 +29,8 @@ import { AwsSignInterceptor } from './http/aws-sign.interceptor';
     },
     requestOptionsProvider,
     AuthGuardService,
-    ApiGatewayService
+    ApiGatewayService,
+    ConfigService
   ]
 })
 export class CoreModule { }

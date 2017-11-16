@@ -5,18 +5,25 @@ import { Observable } from 'rxjs/Rx';
 import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
+import { ConfigService } from '../core/config/config.service';
 import { Greeting } from './greeting';
 
 @Injectable()
 export class GreetingService {
 
-  private greetingsUrl = 'https://dev-api.leanstacks.net/greetings';
+  private greetingsUrl = 'greetings';
   private recentGreetings: Greeting[] = [];
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private configService: ConfigService
+  ) { }
 
   getGreetings(): Observable<Greeting[]> {
-    return this.http.get<any>(this.greetingsUrl)
+    const baseUrl = this.configService.getProperty('greetingApiBaseUrl');
+    const url = `${baseUrl}${this.greetingsUrl}`;
+
+    return this.http.get<any>(url)
       .pipe(
         map(data => data.greetings as Greeting[]),
         tap(greetings => console.log(`fetched all (${greetings.length}) greetings`)),
@@ -25,7 +32,9 @@ export class GreetingService {
   }
 
   getGreeting(id: string): Observable<Greeting> {
-    const url = `${this.greetingsUrl}/${id}`;
+    const baseUrl = this.configService.getProperty('greetingApiBaseUrl');
+    const url = `${baseUrl}${this.greetingsUrl}/${id}`;
+
     return this.http.get<Greeting>(url).pipe(
       tap(greeting => {
         this.addRecent(greeting);
@@ -44,7 +53,9 @@ export class GreetingService {
   }
 
   updateGreeting(greeting: Greeting): Observable<Greeting> {
-    const url = `${this.greetingsUrl}/${greeting.id}`;
+    const baseUrl = this.configService.getProperty('greetingApiBaseUrl');
+    const url = `${baseUrl}${this.greetingsUrl}/${greeting.id}`;
+
     return this.http.put<Greeting>(url, greeting).pipe(
       tap(greeting => console.log(`updated greeting id:${greeting.id}`)),
       catchError(this.handleError<Greeting>('updateGreeting'))
@@ -52,7 +63,10 @@ export class GreetingService {
   }
 
   addGreeting(greeting: Greeting): Observable<Greeting> {
-    return this.http.post<Greeting>(this.greetingsUrl, greeting).pipe(
+    const baseUrl = this.configService.getProperty('greetingApiBaseUrl');
+    const url = `${baseUrl}${this.greetingsUrl}`;
+
+    return this.http.post<Greeting>(url, greeting).pipe(
       tap(greeting => console.log(`added new greeting with id:${greeting.id}`)),
       catchError(this.handleError<Greeting>('addGreeting'))
     );
@@ -60,7 +74,8 @@ export class GreetingService {
 
   deleteGreeting(greeting: Greeting | number): Observable<Greeting> {
     const id = typeof greeting === 'number' ? greeting : greeting.id;
-    const url = `${this.greetingsUrl}/${id}`;
+    const baseUrl = this.configService.getProperty('greetingApiBaseUrl');
+    const url = `${baseUrl}${this.greetingsUrl}/${id}`;
 
     return this.http.delete<Greeting>(url).pipe(
       tap(greeting => {
