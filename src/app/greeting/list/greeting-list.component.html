@@ -1,0 +1,44 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Greetings</h2>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6 col-sm-12">
+    <form>
+      <app-spinner *ngIf="busyAdding" [text]="'Adding...'" [size]="'2x'"></app-spinner>
+      <div class="form-group">
+        <label for="txt">Text</label>
+        <input #txt type="text" class="form-control" placeholder="Hello World!" />
+      </div>
+      <div class="form-group">
+        <label for="auth">Author</label>
+        <input #auth type="text" class="form-control" placeholder="Brendan Eich" />
+      </div>
+      <button
+        class="btn btn-primary"
+        (click)="add(txt.value, auth.value); txt.value=''; auth.value=''">
+        Add
+        <i class="fa fa-chevron-right"></i>
+      </button>
+    </form>
+  </div>
+  <div class="col-md-6 col-sm-12">
+    <app-spinner *ngIf="busyLoading" [size]="'2x'"></app-spinner>
+    <ul class="list-unstyled">
+      <li *ngFor="let greeting of greetings">
+        <blockquote>
+          <p (click)="view(greeting.id)">{{greeting.value}}</p>
+          <footer>{{greeting.author}}</footer>
+          <button
+            title="delete"
+            class="btn btn-xs btn-danger"
+            (click)="delete(greeting)">
+            <i class="fa fa-fw fa-remove"></i>
+          </button>
+        </blockquote>
+      </li>
+    </ul>
+  </div>
+</div>

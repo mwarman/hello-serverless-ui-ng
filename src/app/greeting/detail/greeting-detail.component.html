@@ -1,0 +1,99 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>{{mode | titlecase}} Greeting</h2>
+  </div>
+</div>
+
+<div class="row" *ngIf="mode === 'view'">
+  <div class="col-lg-6 col-md-12">
+    <app-spinner *ngIf="busyLoading" [size]="'2x'"></app-spinner>
+    <div *ngIf="greeting">
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">ID</th>
+            <td>{{greeting.id}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Text</th>
+            <td>{{greeting.value}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Author</th>
+            <td>{{greeting.author}}</td>
+          </tr>
+        </tbody>
+        <tfoot></tfoot>
+      </table>
+
+      <button
+        class="btn btn-default"
+        (click)="goBack()">
+        <i class="fa fa-chevron-left"></i>
+        Go Back
+      </button>
+
+      <button
+        class="btn btn-primary"
+        (click)="edit()">
+        <i class="fa fa-chevron-right"></i>
+        Edit
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<div class="row" *ngIf="mode === 'edit'">
+  <div class="col-md-6">
+    <div *ngIf="greeting">
+
+      <form (ngSubmit)="save()" #greetingForm="ngForm">
+        <app-spinner *ngIf="busyUpdating" [text]="'Updating...'" [size]="'2x'"></app-spinner>
+        <div class="form-group">
+          <label for="greetingText">Text</label>
+          <input
+            type="text"
+            id="greetingText"
+            name="text"
+            #greetingText="ngModel"
+            [(ngModel)]="editingGreeting.value"
+            class="form-control"
+            placeholder="Hello World!"/>
+        </div>
+        <div class="form-group">
+          <label for="greetingAuthor">Author</label>
+          <input
+            type="text"
+            id="greetingAuthor"
+            name="author"
+            #greetingAuthor="ngModel"
+            [(ngModel)]="editingGreeting.author"
+            class="form-control"
+            placeholder="Brendan Eich"/>
+        </div>
+        <button
+          type="button"
+          class="btn btn-default"
+          (click)="view()">
+          <i class="fa fa-chevron-left"></i>
+          Go Back
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary">
+          Save
+          <i class="fa fa-chevron-right"></i>
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>

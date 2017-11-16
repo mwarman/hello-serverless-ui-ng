@@ -1,0 +1,15 @@
+<div class="spinner"
+     [class.spinner-sm]="size === 'sm'"
+     [class.spinner-md]="size === 'md'"
+     [class.spinner-lg]="size === 'lg'"
+     [class.spinner-2x]="size === '2x'"
+     [class.spinner-3x]="size === '3x'"
+     [class.spinner-4x]="size === '4x'"
+     [class.spinner-5x]="size === '5x'">
+  <div class="spinner-content">
+    <span class="spinner-icon">
+      <i class="fa fa-fw fa-spin fa-circle-o-notch"></i>
+    </span>
+    <span class="spinner-text">{{text}}</span>
+  </div>
+</div>
