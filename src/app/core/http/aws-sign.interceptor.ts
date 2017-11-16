@@ -16,7 +16,7 @@ export class AwsSignInterceptor implements HttpInterceptor {
   ) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    console.log(`> AwsSignInterceptor.intercept`);
+    // console.log(`> AwsSignInterceptor.intercept`);
 
     // if not authenticated, continue without adding headers
     if (!this.authService.isAuthenticated()) {
@@ -32,7 +32,7 @@ export class AwsSignInterceptor implements HttpInterceptor {
       queryParams: {},
       body: req.body
     };
-    console.log(`request: ${JSON.stringify(request, null, 2)}`);
+    // console.log(`request: ${JSON.stringify(request, null, 2)}`);
 
     let config = {
       accessKey: AWS.config.credentials.accessKeyId,
@@ -45,10 +45,10 @@ export class AwsSignInterceptor implements HttpInterceptor {
       defaultContentType: 'application/json',
       defaultAcceptType: 'application/json'
     };
-    console.log(`config: ${JSON.stringify(config, null, 2)}`);
+    // console.log(`config: ${JSON.stringify(config, null, 2)}`);
 
     let signedRequest = this.apiGatewayService.signRequest(request, config);
-    console.log(`signedRequest: ${JSON.stringify(signedRequest, null, 2)}`);
+    // console.log(`signedRequest: ${JSON.stringify(signedRequest, null, 2)}`);
 
     let httpHeaders = new HttpHeaders();
     for (let header in signedRequest.headers) {

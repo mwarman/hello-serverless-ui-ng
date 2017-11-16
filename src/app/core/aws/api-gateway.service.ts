@@ -141,7 +141,6 @@ export class ApiGatewayService {
     if (headers === undefined) {
       headers = {};
     }
-    console.log(`headers: ${headers}`);
 
     if (headers['Content-Type'] === undefined) {
       headers['Content-Type'] = config.defaultContentType;
