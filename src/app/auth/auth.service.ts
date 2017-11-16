@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { Observable } from 'rxjs/Rx';
 import { of } from 'rxjs/observable/of';
-import { catchError, map, flatMap, tap } from 'rxjs/operators';
+import { catchError, map, tap, mergeMap } from 'rxjs/operators';
 
 import { AuthenticationDetails, CognitoUserPool, CognitoUser } from 'amazon-cognito-identity-js';
 import * as AWS from 'aws-sdk';
@@ -138,7 +138,7 @@ export class AuthService {
         this.credentials = new AWS.CognitoIdentityCredentials(credentialParams);
         AWS.config.credentials = this.credentials;
       }),
-      flatMap((result) => {
+      mergeMap((result) => {
         return this.refreshCredentials();
       }),
       catchError(this.handleError('signIn', {}))
@@ -173,13 +173,13 @@ export class AuthService {
           });
           AWS.config.credentials = this.credentials;
         }),
-        flatMap((result) => {
+        mergeMap((result) => {
           return this.refreshCredentials();
         }),
         catchError(this.handleError('signIn', {}))
       );
     } else {
-      return Observable.of({
+      return of({
         success: false
       });
     }
