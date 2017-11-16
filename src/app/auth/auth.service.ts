@@ -124,18 +124,21 @@ export class AuthService {
     let signInObservable = Observable.bindCallback(this.signInWithCallback);
     return signInObservable(this.cognitoUser, this.authenticationDetails).pipe(
       tap((result: any) => {
-        console.log(`> tap`);
-        this.credentials = new AWS.CognitoIdentityCredentials({
+        let credentialParams = {
           IdentityPoolId: 'us-east-1:dd021fcb-aa73-4ffb-9194-643f7c0c406e',
           Logins: {
             ['cognito-idp.us-east-1.amazonaws.com/us-east-1_fQSDwKQMK']: result.getIdToken().getJwtToken()
           }
-        });
+        };
+
+        //NOTE Workaround for https://github.com/aws/amazon-cognito-identity-js/issues/378
+        this.credentials = new AWS.CognitoIdentityCredentials(credentialParams);
+        this.credentials.clearCachedId();
+
+        this.credentials = new AWS.CognitoIdentityCredentials(credentialParams);
         AWS.config.credentials = this.credentials;
-        console.log(`< tap`);
       }),
       flatMap((result) => {
-        console.log(`flatMap`);
         return this.refreshCredentials();
       }),
       catchError(this.handleError('signIn', {}))
@@ -146,7 +149,7 @@ export class AuthService {
     console.log(`> AuthService.signInWithCallback`);
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
-        console.log(`Cognito authentication successful. result: ${JSON.stringify(result, null, 2)}`);
+        // console.log(`Cognito authentication successful. result: ${JSON.stringify(result, null, 2)}`);
         callback(result);
       },
       onFailure: (err) => {
@@ -156,6 +159,7 @@ export class AuthService {
   }
 
   getSession(): Observable<any> {
+    console.log(`> AuthService.getSession`);
     this.cognitoUser = this.userPool.getCurrentUser();
     if (this.cognitoUser != null) {
       let getSessionObservable = Observable.bindCallback(this.getSessionWithCallback);
@@ -170,7 +174,6 @@ export class AuthService {
           AWS.config.credentials = this.credentials;
         }),
         flatMap((result) => {
-          console.log(`flatMap`);
           return this.refreshCredentials();
         }),
         catchError(this.handleError('signIn', {}))
@@ -188,13 +191,14 @@ export class AuthService {
       if (err) {
         throw err;
       } else {
+        console.log(`  session.isValid: ${session.isValid()}`);
         callback(session);
       }
     });
   }
 
   refreshCredentials(): Observable<any> {
-    console.log(` AuthService.refreshCredentials`);
+    console.log(`> AuthService.refreshCredentials`);
     let refreshCredentialsObservable = Observable.bindCallback(this.refreshCredentialsWithCallback);
     return refreshCredentialsObservable(this.credentials).pipe(
       tap((result) => this.authenticated = true),

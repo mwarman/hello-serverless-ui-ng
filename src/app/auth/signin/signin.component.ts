@@ -31,10 +31,11 @@ export class SigninComponent implements OnInit {
   }
 
   refreshSession(): void {
+    console.log(`> SigninComponent.refreshSession`);
     this.busy = true;
     this.authService.getSession().subscribe((result) => {
+      console.log(`- SigninComponent.refreshSession result: ${JSON.stringify(result, null, 2)}`);
       if (result.success) {
-        console.log(`- SigninComponent.refreshSession result: ${JSON.stringify(result, null, 2)}`);
         this.router.navigate(['/']);
       } else {
         this.busy = false;
