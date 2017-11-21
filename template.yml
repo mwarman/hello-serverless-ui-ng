@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Hello Serverless UI"
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: 'Environment Configuration'
+        Parameters:
+          - EnvironmentCode
+    ParameterLabels:
+      EnvironmentCode:
+        default: "Select an environment:"
+      WebsiteComponentBuildNumber:
+        default: "Specify a build number (e.g. 33) or an alias (e.g. latest):"
+
+Parameters:
+  EnvironmentCode:
+    Type: String
+    Description: Environment
+    AllowedValues:
+      - dv
+      - qa
+      - pr
+    Default: dv
+    ConstraintDescription: Must select a valid environment
+
+Mappings:
+  AWSS3RegionAttributes:
+    us-east-1:
+      HostedZoneId: Z3AQBSTGFYJSTF
+      WebsiteEndpoint: s3-website-us-east-1.amazonaws.com
+    us-west-1:
+      HostedZoneId: Z2F56UZL2M1ACD
+      WebsiteEndpoint: s3-website-us-west-1.amazonaws.com
+    us-west-2:
+      HostedZoneId: Z3BJ6K6RIION7M
+      WebsiteEndpoint: s3-website-us-west-2.amazonaws.com
+    eu-west-1:
+      HostedZoneId: Z1BKCTXD74EZPE
+      WebsiteEndpoint: s3-website-eu-west-1.amazonaws.com
+    ap-southeast-1:
+      HostedZoneId: Z3O0J2DXBE1FTB
+      WebsiteEndpoint: s3-website-ap-southeast-1.amazonaws.com
+    ap-southeast-2:
+      HostedZoneId: Z1WCIGYICN2BYD
+      WebsiteEndpoint: s3-website-ap-southeast-2.amazonaws.com
+    ap-northeast-1:
+      HostedZoneId: Z2M4EHUR26P7ZW
+      WebsiteEndpoint: s3-website-ap-northeast-1.amazonaws.com
+    sa-east-1:
+      HostedZoneId: Z31GFT0UA1I2HV
+      WebsiteEndpoint: s3-website-sa-east-1.amazonaws.com
+
+  EnvironmentAttributeMap:
+    dv:
+      WebsiteDNSName: dev-hisls.leanstacks.net.
+      WebsiteBucketName: dev-hisls.leanstacks.net
+    qa:
+      WebsiteDNSName: qa-hisls.leanstacks.net.
+      WebsiteBucketName: qa-hisls.leanstacks.net
+    pr:
+      WebsiteDNSName: hisls.leanstacks.net.
+      WebsiteBucketName: hisls.leanstacks.net
+
+Resources:
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      BucketName: !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, WebsiteBucketName]
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+
+  WebsiteDNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: leanstacks.net.
+      Comment: DNS record for Hello Serverless UI
+      Name: !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, WebsiteDNSName]
+      Type: A
+      AliasTarget:
+        HostedZoneId: !FindInMap [AWSS3RegionAttributes, !Ref 'AWS::Region', HostedZoneId]
+        DNSName: !FindInMap [AWSS3RegionAttributes, !Ref 'AWS::Region', WebsiteEndpoint]
+
+Outputs:
+  WebsiteURL:
+    Value: !Join ['', ['http://', !Ref WebsiteDNSRecord]]
+    Description: Website URL
