@@ -99,6 +99,7 @@ Resources:
 
   OriginBucketPolicy:
     Type: AWS::S3::BucketPolicy
+    Condition: IsProduction
     Properties:
       Bucket: !Ref OriginBucket
       PolicyDocument:
