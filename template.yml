@@ -181,10 +181,10 @@ Resources:
 
 Outputs:
   WebsiteURL:
-    Condition: IsNonProduction
-    Value: !Join ['', ['http://', !Ref WebsiteBucketDNSRecord]]
-    Description: Website URL
-  WebsiteURL:
-    Condition: IsProduction
-    Value: !Join ['', ['https://', !Ref DistributionDNSRecord]]
+    Value:
+      !Join
+        - ''
+        -
+          - !If [ IsProduction , 'https://', 'http://']
+          - !If [ IsProduction, !Ref DistributionDNSRecord, !Ref WebsiteBucketDNSRecord ]
     Description: Website URL
