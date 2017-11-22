@@ -12,8 +12,6 @@ Metadata:
     ParameterLabels:
       EnvironmentCode:
         default: "Select an environment:"
-      WebsiteComponentBuildNumber:
-        default: "Specify a build number (e.g. 33) or an alias (e.g. latest):"
 
 Parameters:
   EnvironmentCode:
@@ -101,6 +99,7 @@ Resources:
 
   OriginBucketPolicy:
     Type: AWS::S3::BucketPolicy
+    Condition: IsProduction
     Properties:
       Bucket: !Ref OriginBucket
       PolicyDocument:
@@ -126,7 +125,7 @@ Resources:
         Comment:
           !Join
             - ' '
-            - - Fn::FindInMap: [EnvironmentAttributeMap, Ref: EnvironmentCode, EnvironmentName]
+            - - !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, EnvironmentName]
               - Hello Serverless UI
         Origins:
           - DomainName: !GetAtt OriginBucket.DomainName
@@ -134,7 +133,7 @@ Resources:
               !Join
                 - ''
                 - - 'S3-'
-                  - Fn::FindInMap: [EnvironmentAttributeMap, Ref: EnvironmentCode, WebsiteBucketName]
+                  - !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, WebsiteBucketName]
             S3OriginConfig:
               OriginAccessIdentity: origin-access-identity/cloudfront/E3VOUOAN249RS
         Aliases:
@@ -146,6 +145,13 @@ Resources:
         ViewerCertificate:
           AcmCertificateArn: arn:aws:acm:us-east-1:543563315878:certificate/07564232-ff6d-4173-afff-684af61ba06c
           SslSupportMethod: sni-only
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponsePagePath: '/index.html'
+            ResponseCode: 200
+          - ErrorCode: 403
+            ResponsePagePath: '/index.html'
+            ResponseCode: 200
         DefaultCacheBehavior:
           AllowedMethods:
             - GET
@@ -155,7 +161,7 @@ Resources:
             !Join
               - ''
               - - 'S3-'
-                - Fn::FindInMap: [EnvironmentAttributeMap, Ref: EnvironmentCode, WebsiteBucketName]
+                - !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, WebsiteBucketName]
           ForwardedValues:
             QueryString: false
             Cookies:
@@ -175,10 +181,10 @@ Resources:
 
 Outputs:
   WebsiteURL:
-    Condition: IsNonProduction
-    Value: !Join ['', ['http://', !Ref WebsiteBucketDNSRecord]]
-    Description: Website URL
-  WebsiteURL:
-    Condition: IsProduction
-    Value: !Join ['', ['https://', !Ref DistributionDNSRecord]]
+    Value:
+      !Join
+        - ''
+        -
+          - !If [ IsProduction , 'https://', 'http://']
+          - !If [ IsProduction, !Ref DistributionDNSRecord, !Ref WebsiteBucketDNSRecord ]
     Description: Website URL
