@@ -1,0 +1,190 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Hello Serverless UI"
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: 'Environment Configuration'
+        Parameters:
+          - EnvironmentCode
+    ParameterLabels:
+      EnvironmentCode:
+        default: "Select an environment:"
+
+Parameters:
+  EnvironmentCode:
+    Type: String
+    Description: Environment
+    AllowedValues:
+      - dv
+      - qa
+      - pr
+    Default: dv
+    ConstraintDescription: Must select a valid environment
+
+Mappings:
+  AWSS3RegionAttributes:
+    us-east-1:
+      HostedZoneId: Z3AQBSTGFYJSTF
+      WebsiteEndpoint: s3-website-us-east-1.amazonaws.com
+    us-west-1:
+      HostedZoneId: Z2F56UZL2M1ACD
+      WebsiteEndpoint: s3-website-us-west-1.amazonaws.com
+    us-west-2:
+      HostedZoneId: Z3BJ6K6RIION7M
+      WebsiteEndpoint: s3-website-us-west-2.amazonaws.com
+    eu-west-1:
+      HostedZoneId: Z1BKCTXD74EZPE
+      WebsiteEndpoint: s3-website-eu-west-1.amazonaws.com
+    ap-southeast-1:
+      HostedZoneId: Z3O0J2DXBE1FTB
+      WebsiteEndpoint: s3-website-ap-southeast-1.amazonaws.com
+    ap-southeast-2:
+      HostedZoneId: Z1WCIGYICN2BYD
+      WebsiteEndpoint: s3-website-ap-southeast-2.amazonaws.com
+    ap-northeast-1:
+      HostedZoneId: Z2M4EHUR26P7ZW
+      WebsiteEndpoint: s3-website-ap-northeast-1.amazonaws.com
+    sa-east-1:
+      HostedZoneId: Z31GFT0UA1I2HV
+      WebsiteEndpoint: s3-website-sa-east-1.amazonaws.com
+
+  EnvironmentAttributeMap:
+    dv:
+      EnvironmentName: Development
+      WebsiteDNSName: dev-hisls.leanstacks.net.
+      WebsiteBucketName: dev-hisls.leanstacks.net
+    qa:
+      EnvironmentName: QA
+      WebsiteDNSName: qa-hisls.leanstacks.net.
+      WebsiteBucketName: qa-hisls.leanstacks.net
+    pr:
+      EnvironmentName: Production
+      WebsiteDNSName: hisls.leanstacks.net.
+      WebsiteBucketName: hisls.leanstacks.net
+
+Conditions:
+  IsProduction: !Equals [ !Ref EnvironmentCode, pr ]
+  IsNonProduction: !Not [ !Equals [ !Ref EnvironmentCode, pr ]]
+
+Resources:
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Condition: IsNonProduction
+    Properties:
+      BucketName: !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, WebsiteBucketName]
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+
+  WebsiteBucketDNSRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: IsNonProduction
+    Properties:
+      HostedZoneName: leanstacks.net.
+      Name: !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, WebsiteDNSName]
+      Type: A
+      AliasTarget:
+        HostedZoneId: !FindInMap [AWSS3RegionAttributes, !Ref 'AWS::Region', HostedZoneId]
+        DNSName: !FindInMap [AWSS3RegionAttributes, !Ref 'AWS::Region', WebsiteEndpoint]
+
+  OriginBucket:
+    Type: AWS::S3::Bucket
+    Condition: IsProduction
+    Properties:
+      BucketName: !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, WebsiteBucketName]
+
+  OriginBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Condition: IsProduction
+    Properties:
+      Bucket: !Ref OriginBucket
+      PolicyDocument:
+        Statement:
+          -
+            Action:
+              - s3:GetObject
+            Effect: Allow
+            Resource:
+              !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref OriginBucket
+                - '/*'
+            Principal:
+              AWS: 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity E3VOUOAN249RS'
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Condition: IsProduction
+    Properties:
+      DistributionConfig:
+        Comment:
+          !Join
+            - ' '
+            - - !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, EnvironmentName]
+              - Hello Serverless UI
+        Origins:
+          - DomainName: !GetAtt OriginBucket.DomainName
+            Id:
+              !Join
+                - ''
+                - - 'S3-'
+                  - !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, WebsiteBucketName]
+            S3OriginConfig:
+              OriginAccessIdentity: origin-access-identity/cloudfront/E3VOUOAN249RS
+        Aliases:
+          - !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, WebsiteBucketName]
+        Enabled: true
+        HttpVersion: http2
+        DefaultRootObject: index.html
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          AcmCertificateArn: arn:aws:acm:us-east-1:543563315878:certificate/07564232-ff6d-4173-afff-684af61ba06c
+          SslSupportMethod: sni-only
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponsePagePath: '/index.html'
+            ResponseCode: 200
+          - ErrorCode: 403
+            ResponsePagePath: '/index.html'
+            ResponseCode: 200
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          TargetOriginId:
+            !Join
+              - ''
+              - - 'S3-'
+                - !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, WebsiteBucketName]
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: redirect-to-https
+
+  DistributionDNSRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: IsProduction
+    Properties:
+      HostedZoneName: leanstacks.net.
+      Name: !FindInMap [EnvironmentAttributeMap, !Ref EnvironmentCode, WebsiteDNSName]
+      Type: A
+      AliasTarget:
+        HostedZoneId: Z2FDTNDATAQYW2
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+
+Outputs:
+  WebsiteURL:
+    Value:
+      !Join
+        - ''
+        -
+          - !If [ IsProduction , 'https://', 'http://']
+          - !If [ IsProduction, !Ref DistributionDNSRecord, !Ref WebsiteBucketDNSRecord ]
+    Description: Website URL
